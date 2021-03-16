@@ -217,4 +217,9 @@ extern class ChildProcess extends EventEmitter<ChildProcess> {
 		and the parent's event loop will not include the child in its reference count.
 	**/
 	function unref():Void;
+
+	/**
+	 * The exit code of the child process. If the child process is still running, the field will be null.
+	 */
+	var exitCode(default, null):Null<Int>;
 }
