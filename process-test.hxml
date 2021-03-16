@@ -1,0 +1,4 @@
+-lib hxnodejs
+-js index.js
+--cmd node index.js
+--main ProcessTest
