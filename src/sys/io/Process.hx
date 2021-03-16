@@ -5,6 +5,7 @@ import haxe.io.Input;
 import haxe.io.Output;
 import js.lib.Error;
 import js.node.ChildProcess;
+import js.node.buffer.Buffer;
 import js.node.child_process.ChildProcess as ChildProcessObject;
 import js.node.stream.Readable;
 import js.node.stream.Writable;
@@ -19,6 +20,9 @@ class Process {
 
 	public function new(cmd:String, ?args:Array<String>, ?detached:Bool) {
 		process = ChildProcess.spawn(cmd, args, {detached: detached});
+		process.on('exit', (code) -> {
+			trace('exited with $code');
+		});
 
 		stderr = new StreamInput(process.stderr);
 		stdin = new StreamOutput(process.stdin);
@@ -71,8 +75,10 @@ class StreamOutput extends Output {
 	}
 
 	override public function writeByte(c:Int):Void {
-		stream.write(c, null, (error:Error) -> {
-			throw error;
-		});
+		stream.cork();
+		var chunk = Buffer.alloc(1);
+		chunk.writeInt8(c, 0);
+		stream.write(chunk, null, () -> {});
+		stream.uncork();
 	}
 }
